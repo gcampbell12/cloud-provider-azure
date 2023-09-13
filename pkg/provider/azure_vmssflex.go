@@ -53,7 +53,6 @@ type FlexScaleSet struct {
 	vmssFlexNodeNameToVmssID *sync.Map
 	vmssFlexNodeNameToVMName *sync.Map
 	vmssFlexVMNameToNodeName *sync.Map
-	vmssFlexVMCache          azcache.Resource
 
 	// lockMap in cache refresh
 	lockMap *lockMap
@@ -70,10 +69,6 @@ func newFlexScaleSet(ctx context.Context, az *Cloud) (VMSet, error) {
 
 	var err error
 	fs.vmssFlexCache, err = fs.newVmssFlexCache(ctx)
-	if err != nil {
-		return nil, err
-	}
-	fs.vmssFlexVMCache, err = fs.newVmssFlexVMCache(ctx)
 	if err != nil {
 		return nil, err
 	}

@@ -20,7 +20,9 @@ set -o pipefail
 REPO_ROOT=$(realpath $(dirname ${BASH_SOURCE})/..)
 COPYRIGHT_FILE="${REPO_ROOT}/hack/boilerplate/boilerplate.generatego.txt"
 AZURECLIENTS="pkg/azureclients"
+AZURECLIENTSV2="pkg/azureclients/v2"
 TARGET_DIR="${REPO_ROOT}/${AZURECLIENTS}"
+TARGET_DIR_V2="${REPO_ROOT}/${AZURECLIENTSV2}"
 
 if ! type mockgen &> /dev/null; then
     echo "mockgen not exist, install it"
@@ -34,6 +36,13 @@ function update_all_mocks(){
         if [ -d "${dir}" ] && [ "${dir##*/}" != "v2" ]; then \
             echo "Updating mocks for ${dir%*/}"
             mockgen -copyright_file=$COPYRIGHT_FILE -source="${AZURECLIENTS}/${dir##*/}/interface.go" -package=mock${dir##*/} Interface > $TARGET_DIR/${dir##*/}/mock${dir##*/}/interface.go
+        fi
+    done
+    for dir in $TARGET_DIR_V2/*
+    do
+        if [ -d "${dir}" ]; then \
+            echo "Updating mocks for ${dir%*/}"
+            mockgen -copyright_file=$COPYRIGHT_FILE -source="${AZURECLIENTSV2}/${dir##*/}/interface.go" -package=mock${dir##*/} Interface > $TARGET_DIR_V2/${dir##*/}/mock${dir##*/}/interface.go
         fi
     done
 }

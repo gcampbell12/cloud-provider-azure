@@ -37,6 +37,7 @@ import (
 	"sigs.k8s.io/cloud-provider-azure/pkg/azureclients/securitygroupclient/mocksecuritygroupclient"
 	"sigs.k8s.io/cloud-provider-azure/pkg/azureclients/snapshotclient/mocksnapshotclient"
 	"sigs.k8s.io/cloud-provider-azure/pkg/azureclients/subnetclient/mocksubnetclient"
+	mockvmclientv2 "sigs.k8s.io/cloud-provider-azure/pkg/azureclients/v2/vmclient/mockvmclient"
 	"sigs.k8s.io/cloud-provider-azure/pkg/azureclients/vmclient/mockvmclient"
 	"sigs.k8s.io/cloud-provider-azure/pkg/azureclients/vmssclient/mockvmssclient"
 	"sigs.k8s.io/cloud-provider-azure/pkg/azureclients/vmssvmclient/mockvmssvmclient"
@@ -117,6 +118,7 @@ func GetTestCloud(ctrl *gomock.Controller) (az *Cloud) {
 	az.VirtualMachineScaleSetsClient = mockvmssclient.NewMockInterface(ctrl)
 	az.VirtualMachineScaleSetVMsClient = mockvmssvmclient.NewMockInterface(ctrl)
 	az.VirtualMachinesClient = mockvmclient.NewMockInterface(ctrl)
+	az.VirtualMachinesClientV2 = mockvmclientv2.NewMockInterface(ctrl)
 	az.PrivateLinkServiceClient = mockprivatelinkserviceclient.NewMockInterface(ctrl)
 	az.VMSet, _ = newAvailabilitySet(az)
 	az.vmCache, _ = az.newVMCache()

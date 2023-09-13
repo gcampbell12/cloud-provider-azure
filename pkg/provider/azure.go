@@ -27,6 +27,8 @@ import (
 	"sync"
 	"time"
 
+	vmclientv2 "sigs.k8s.io/cloud-provider-azure/pkg/azureclients/v2/vmclient"
+
 	ratelimitconfig "sigs.k8s.io/cloud-provider-azure/pkg/provider/config"
 
 	"github.com/Azure/go-autorest/autorest"
@@ -364,6 +366,7 @@ type Cloud struct {
 	PublicIPAddressesClient         publicipclient.Interface
 	SecurityGroupsClient            securitygroupclient.Interface
 	VirtualMachinesClient           vmclient.Interface
+	VirtualMachinesClientV2         vmclientv2.Interface
 	StorageAccountClient            storageaccountclient.Interface
 	DisksClient                     diskclient.Interface
 	SnapshotsClient                 snapshotclient.Interface
@@ -1003,6 +1006,7 @@ func (az *Cloud) configAzureClients(
 	az.StorageAccountClient = storageaccountclient.New(storageAccountClientConfig)
 	az.DisksClient = diskclient.New(diskClientConfig)
 	az.VirtualMachinesClient = vmclient.New(vmClientConfig)
+	az.VirtualMachinesClientV2 = vmclientv2.New(vmClientConfig)
 	az.VirtualMachineScaleSetsClient = vmssclient.New(vmssClientConfig)
 	az.VirtualMachineScaleSetVMsClient = vmssvmclient.New(vmssVMClientConfig)
 	az.RoutesClient = routeclient.New(routeClientConfig)

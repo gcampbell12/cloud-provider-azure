@@ -246,10 +246,16 @@ func getRetryAfter(resp *http.Response) time.Duration {
 		return 0
 	}
 
+	if userQuotaReset := resp.Header.Get(consts.UserQuotaResetsAfterHeaderKey); userQuotaReset != "" {
+		ra = userQuotaReset
+	}
+
 	var dur time.Duration
 	if retryAfter, _ := strconv.Atoi(ra); retryAfter > 0 {
 		dur = time.Duration(retryAfter) * time.Second
 	} else if t, err := time.Parse(time.RFC1123, ra); err == nil {
+		dur = t.Sub(now())
+	} else if t, err := time.Parse(time.TimeOnly, ra); err == nil {
 		dur = t.Sub(now())
 	}
 	return dur

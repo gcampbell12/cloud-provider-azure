@@ -21,7 +21,6 @@ import (
 	"fmt"
 	"net/http"
 	"strings"
-	"sync"
 
 	"github.com/Azure/azure-sdk-for-go/services/compute/mgmt/2022-08-01/compute"
 	"github.com/Azure/go-autorest/autorest/azure"
@@ -124,7 +123,7 @@ func (fs *FlexScaleSet) AttachDisk(ctx context.Context, nodeName types.NodeName,
 // DetachDisk detaches a disk from VM
 func (fs *FlexScaleSet) DetachDisk(ctx context.Context, nodeName types.NodeName, diskMap map[string]string) error {
 	vmName := mapNodeNameToVMName(nodeName)
-	vm, err := fs.getVmssFlexVM(vmName, azcache.CacheReadTypeDefault)
+	vm, err := fs.getVmssFlexVM(vmName, azcache.CacheReadTypeForceRefresh)
 	if err != nil {
 		// if host doesn't exist, no need to detach
 		klog.Warningf("azureDisk - cannot find node %s, skip detaching disk list(%s)", nodeName, diskMap)
@@ -283,21 +282,8 @@ func (fs *FlexScaleSet) updateCache(nodeName string, vm *compute.VirtualMachine)
 		return fmt.Errorf("vm.VirtualMachineScaleSet.ID is nil")
 	}
 
-	vmssFlexID := *vm.VirtualMachineScaleSet.ID
-	fs.lockMap.LockEntry(vmssFlexID)
-	defer fs.lockMap.UnlockEntry(vmssFlexID)
-	cached, err := fs.vmssFlexVMCache.Get(vmssFlexID, azcache.CacheReadTypeNoRefresh)
-	if err != nil {
-		return err
-	}
-	if cached != nil {
-		vmMap := cached.(*sync.Map)
-		vmMap.Store(nodeName, vm)
-		fs.vmssFlexVMCache.Update(vmssFlexID, vmMap)
-	}
-
 	fs.cacheVirtualMachine(*vm)
-	klog.V(2).Infof("updateCache(%s) for vmssFlexID(%s) successfully", nodeName, vmssFlexID)
+	klog.V(2).Infof("updateCache(%s) successfully", nodeName)
 	return nil
 }
 

@@ -541,7 +541,7 @@ func (c *controllerCommon) getNodeDataDisks(nodeName types.NodeName, crt azcache
 func (c *controllerCommon) GetDiskLun(diskName, diskURI string, nodeName types.NodeName) (int32, *string, error) {
 	// getNodeDataDisks need to fetch the cached data/fresh data if cache expired here
 	// to ensure we get LUN based on latest entry.
-	disks, provisioningState, err := c.getNodeDataDisks(nodeName, azcache.CacheReadTypeDefault)
+	disks, provisioningState, err := c.getNodeDataDisks(nodeName, azcache.CacheReadTypeForceRefresh)
 	if err != nil {
 		klog.Errorf("error of getting data disks for node %s: %v", nodeName, err)
 		return -1, provisioningState, err
